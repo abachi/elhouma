@@ -1,5 +1,5 @@
 <template>
-  <mohitti-map></mohitti-map>
+  <elhouma-map></elhouma-map>
 </template>
 <script>
   export default {
