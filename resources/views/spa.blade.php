@@ -18,9 +18,10 @@
 </head>
 <body>
     @include('header')
-    <main>
-      @yield('content')
-    </main>
+    <div id="app">
+        <app></app>
+    </div>
     @include('footer')
+    <script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>

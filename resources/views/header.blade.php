@@ -3,11 +3,10 @@
         <div class="container mx-auto flex justify-between items-center">
             <div class="">
               <a class="logo" href="{{ url('/') }}">
-                {{ config('app.name', 'Laravel') }}
+                {{ config('app.name', 'ElHouma') }}
               </a>
             </div>
             <div class="">
-                <!-- Right Side Of Navbar -->
                 <ul>
                     @guest
                         <li class="inline-block mx-3">
@@ -21,6 +20,9 @@
                             <a href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 {{ Auth::user()->name }} <span class="caret"></span>
                             </a>
+                        </li>
+                        <li class="inline-block mx-3">
+                            <a href="{{ route('issues.create') }}" role="button">{{ __('New Issue') }}</a>
                         </li>
                         <li>
                           <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">{{ __('Logout') }}</a>

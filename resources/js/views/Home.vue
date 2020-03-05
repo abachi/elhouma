@@ -4,7 +4,7 @@
 <script>
   export default {
     mounted() {
-      console.log('App vue mounted');
+      console.log('Home vue mounted');
     },
   };
 </script>

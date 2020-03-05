@@ -1,4 +1,3 @@
 <?php
 
-Auth::routes();
-Route::get('/', 'HomeController@index')->name('home');
+Route::get('/{any}', 'SpaController@index')->where('any', '.*');
