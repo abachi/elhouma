@@ -18,8 +18,8 @@ class AuthController extends Controller
         if (!$token = auth()->attempt($request->only('email', 'password'))) {
             return response(null, 401);
         }
-
-        return response()->json(['token' => $token]);
+        $user = auth()->user()->only(['id', 'name', 'email']);
+        return response()->json(['user' => $user, 'token' => $token]);
     }
 
     public function register(Request $request)
