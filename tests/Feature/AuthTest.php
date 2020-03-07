@@ -41,7 +41,7 @@ class AuthTest extends TestCase
 
         $response
             ->assertStatus(201)
-            ->assertJsonStructure(['token', 'email']);
+            ->assertJsonStructure(['token', 'user']);
     }
 
     public function test_user_should_logout()
@@ -51,5 +51,24 @@ class AuthTest extends TestCase
         $response = $this->json('POST', route('auth.logout'), ['token' => $token]);
         $response->assertStatus(200);
         $this->assertGuest('api');
+    }
+
+    public function test_should_return_the_user_by_token()
+    {
+        $user = factory(User::class)->create();
+        $token = \JWTAuth::fromUser($user);
+        $response = $this->json('GET', route('auth.attempt'), ['token' => $token]);
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure(['user']);
+    }
+
+    public function test_should_return_invalid_token_response()
+    {
+        $token = 'foo.baz.boo';
+        $response = $this->json('GET', route('auth.attempt'), ['token' => $token]);
+        $response
+            ->assertStatus(401)
+            ->assertJsonStructure(['error']);
     }
 }
