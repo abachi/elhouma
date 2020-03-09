@@ -7,21 +7,10 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name') }}</title>
 
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-
-    <!-- Styles -->
-    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
-    @include('header')
-    <div id="app">
-        <app></app>
-    </div>
-    @include('footer')
-    <script src="{{ asset('js/app.js') }}"></script>
+    <h1>We should design a landing page here.</h1>
 </body>
 </html>
