@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use Illuminate\Http\Request;
+use App\Http\Requests\RegisterUser;
 use App\Http\Controllers\Controller;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
@@ -28,15 +29,17 @@ class AuthController extends Controller
             'token' => $token]);
     }
 
-    public function register(Request $request)
+    public function register(RegisterUser $request)
     {
-        $user = User::create($request->all());
+        $data = $request->validated();
+        $data['password'] = bcrypt($data['password']);
+        $user = User::create($data);
         if ($user) {
             $token = auth()->attempt($request->only('email', 'password'));
             return response()->json([
-                'token' => $token,
-                'user' => $this->publicUserData($user),
-            ], 201);
+                'user' => $this->publicUserData(auth()->user()),
+                'token' => $token
+            ],201);
         }
     }
 
