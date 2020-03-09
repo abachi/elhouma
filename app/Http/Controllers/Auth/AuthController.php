@@ -19,7 +19,9 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         if (!$token = auth()->attempt($request->only('email', 'password'))) {
-            return response(null, 401);
+            return response([
+                'error' => __('Wrong email or password.')
+            ], 401);
         }
         return response()->json([
             'user' => $this->publicUserData(auth()->user()),

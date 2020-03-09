@@ -71,4 +71,20 @@ class AuthTest extends TestCase
             ->assertStatus(401)
             ->assertJsonStructure(['error']);
     }
+
+    public function test_should_return_password_or_email_validation_error()
+    {
+        $user = factory(User::class)->create(['email' => 'abachinasser@gmail.com']);
+        $response = $this->json('POST', route('auth.login'), [
+          'email' => 'doesnotexist@example.com',
+          'password' => 'notvalid',
+          ]);
+        $response
+          ->assertStatus(401)
+          ->assertJsonStructure([
+            'error',
+          ]);
+
+        $this->assertGuest('api');
+    }
 }
