@@ -11,7 +11,7 @@ class ReportsTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(App\Report::class, 10)->create([
+        factory(App\Report::class, 5)->create([
             'reporter_id' => App\User::first(),
         ]);
     }
