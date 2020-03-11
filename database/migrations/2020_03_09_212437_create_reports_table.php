@@ -15,7 +15,7 @@ class CreateReportsTable extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->integer('reporter_id');
             $table->string('picture');
             $table->float('lat');
