@@ -4,6 +4,7 @@
 
 use App\Report;
 use Faker\Generator as Faker;
+use Illuminate\Http\UploadedFile;
 
 $factory->define(Report::class, function (Faker $faker) {
     return [

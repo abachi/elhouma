@@ -20,9 +20,9 @@ class ReportsController extends Controller
     }
 
     public function store(StoreReport $request)
-    {
+    {   
         $request->validated();
-        $picture = $request->picture->store('public/images');
+        $picture = $request->picture->store('images', 'public');
         
         $report = Report::create([
             'reporter_id' => auth()->user()->id,

@@ -15,7 +15,6 @@ class UserAddReportTest extends TestCase
 
     private function reportData($data = [])
     {
-        Storage::fake('images');
         return array_merge([
             'lat' => '31.6032088',
             'lng' => '-2.2257426',
@@ -33,12 +32,12 @@ class UserAddReportTest extends TestCase
 
     public function test_authenticated_user_can_add_a_valid_report()
     {
-        Storage::disk('local')->assertMissing('issue.jpg');
+        Storage::disk('public')->assertMissing('issue.jpg');
         $this->assertNull(Report::all()->first());
         $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken());
         $report = Report::all()->first();
         $this->assertNotNull($report);
-        Storage::disk('local')->assertExists($report->picture);
+        Storage::disk('public')->assertExists($report->picture);
         $response
             ->assertStatus(201)
             ->assertJsonStructure(['report']);
