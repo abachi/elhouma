@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Report;
+use App\IssueConfirmation;
+use App\Http\Requests\IssueConfirmationRequest;
 use App\Http\Resources\Report as ReportResource;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreReport;
@@ -11,7 +13,7 @@ class ReportsController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['only' => ['store']]);
+        $this->middleware('auth:api', ['only' => ['store', 'confirm']]);
     }
 
     public function index()
@@ -35,6 +37,20 @@ class ReportsController extends Controller
         if ($report) {
             return response()->json([
                 'report' => $report
+            ], 201);
+        }
+    }
+
+    public function confirm(IssueConfirmationRequest $request)
+    {
+        $request->validated();
+
+        $report = Report::findOrFail($request->report_id);
+
+        if($report->confirmBy(auth()->user())){
+            return response()->json([
+                'report' => $report,
+                'status' => 'confirmed',
             ], 201);
         }
     }

@@ -10,4 +10,5 @@ Route::group(['prefix' => 'auth', 'namespace' => 'Auth'], function () {
 Route::group(['prefix' => 'reports'], function () {
     Route::get('index', 'ReportsController@index')->name('reports.index');
     Route::post('store', 'ReportsController@store')->name('reports.store');
+    Route::post('confirm', 'ReportsController@confirm')->name('reports.confirm');
 });
