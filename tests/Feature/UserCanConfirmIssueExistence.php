@@ -8,7 +8,7 @@ use App\IssueConfirmation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ConfirmIssueExistenceTest extends TestCase
+class UserCanConfirmIssueExistence extends TestCase
 {
     use RefreshDatabase;
 

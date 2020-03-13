@@ -45,68 +45,62 @@ class UserAddReportTest extends TestCase
 
     public function test_cannot_add_a_report_with_invalid_token()
     {
-        $this->assertNull(Report::all()->first());
         $response = $this->json('POST', route('reports.store'), $this->reportData());
+        $this->assertEquals(0, Report::all()->count());
         $response->assertStatus(401);
     }
 
     public function test_should_not_add_report_with_missing_latitude()
     {
-        $this->assertNull(Report::all()->first());
         $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
             'lat' => '',
         ]));
-        $this->assertNull(Report::all()->first());
+        $this->assertEquals(0, Report::all()->count());
         $response->assertStatus(422);
     }
 
     public function test_should_not_add_report_with_invalid_latitude()
     {
-        $this->assertNull(Report::all()->first());
         $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
             'lat' => 'invalid_lat',
         ]));
-        $this->assertNull(Report::all()->first());
+        $this->assertEquals(0, Report::all()->count());
         $response->assertStatus(422);
     }
 
     public function test_should_not_add_report_with_missing_longitude()
     {
-        $this->assertNull(Report::all()->first());
         $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
             'lng' => '',
         ]));
-        $this->assertNull(Report::all()->first());
+        $this->assertEquals(0, Report::all()->count());
         $response->assertStatus(422);
     }
 
     public function test_should_not_add_report_with_invalid_longitude()
     {
-        $this->assertNull(Report::all()->first());
         $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
             'lng' => 'invalid_lng',
         ]));
-        $this->assertNull(Report::all()->first());
+        $this->assertEquals(0, Report::all()->count());
         $response->assertStatus(422);
     }
 
     public function test_should_not_add_report_with_missing_picture()
     {
-        $this->assertNull(Report::all()->first());
         $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
             'picture' => '',
         ]));
-        $this->assertNull(Report::all()->first());
+        $this->assertEquals(0, Report::all()->count());
         $response->assertStatus(422);
     }
 
     public function test_should_not_add_report_with_invalid_picture()
     {
-        $this->assertNull(Report::all()->first());
         $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
             'picture' => UploadedFile::fake()->image('issue.php')
         ]));
-        $this->assertNull(Report::all()->first());
+        $this->assertEquals(0, Report::all()->count());
         $response->assertStatus(422);
     }
 
