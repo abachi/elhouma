@@ -57,4 +57,16 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function reports()
+    {
+        return $this->hasMany('App\Report', 'reporter_id');
+    }
+
+    public function findReport($id)
+    {
+        return $this->reports->filter(function($r)use($id){
+            return $r->id == $id;
+        })->first();
+    }
 }

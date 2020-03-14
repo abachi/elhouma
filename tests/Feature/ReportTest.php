@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use JWTAuth;
 use App\User;
 use App\Report;
+use App\FixedIssue;
 use App\IssueConfirmation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -57,4 +59,83 @@ class ReportTest extends TestCase
         
         $this->assertEquals(1, IssueConfirmation::all()->count());
     }
+
+    public function test_authenticated_user_can_request_the_reporter_to_change_report_status_to_fixed()
+    {
+        $this->withoutExceptionHandling();
+        $nasser = factory(User::class)->create();
+        $sabah = factory(User::class)->create();
+        $report = factory(Report::class)->make();
+        $nasser->reports()->save($report);
+        $token = JWTAuth::fromUser($sabah);
+        $response = $this->json('POST', route('reports.fixed', [
+            'token' => $token,
+            'report_id' => $report->id,
+        ]));
+
+        $response->assertStatus(201);
+    }
+
+    public function test_authentcated_user_can_sees_his_own_posted_reports()
+    {
+        $reports = factory(Report::class, 5)->make();
+        $user = factory(User::class)->create();
+        $token = JWTAuth::fromUser($user);
+        $user->reports()->saveMany($reports);
+        
+        $response = $this->json('GET', route('users.my-reports', [
+            'token' => $token
+        ]));
+
+        $response
+            ->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    [
+                        'id',
+                        'description',
+                        'lat',
+                        'lng',
+                        'picture'
+                    ]
+                ]
+            ]);
+    }
+
+    public function test_report_should_have_a_fixed_request()
+    {
+        $report = factory(Report::class)->make();
+        $userA = factory(User::class)->create();
+        $userB = factory(User::class)->create();
+        $userA->reports()->save($report);
+
+        $this->assertEquals(0, FixedIssue::all()->count());
+        
+        $report->fixedBy($userB);
+
+        $this->assertEquals(1, FixedIssue::all()->count());
+        $this->assertEquals($userB->id, FixedIssue::all()->first()->user_id);
+    }
+
+    public function test_authenticated_user_cannot_see_another_user_reports()
+    {
+        $nasser = factory(User::class)->create();
+        $sabah = factory(User::class)->create();
+        $token = JWTAuth::fromUser($nasser);
+        $reports = factory(Report::class, 3)->make();
+        $sabah->reports()->saveMany($reports);
+
+        $response = $this->json('GET', route('users.my-reports', ['token' => $token]));
+
+        $response->assertStatus(200)
+                ->assertJsonStructure([
+                'data' => []
+        ]);
+    }
+
+    public function test_guest_should_receive_unauthorized_response_trying_to_access_his_reprots()
+    {
+        $this->json('GET', route('users.my-reports'))->assertStatus(401);
+    }
+    
 }
