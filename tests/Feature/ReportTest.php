@@ -83,9 +83,9 @@ class ReportTest extends TestCase
         $token = JWTAuth::fromUser($user);
         $user->reports()->saveMany($reports);
         
-        $response = $this->json('GET', route('users.my-reports', [
+        $response = $this->json('GET', route('users.reports.index', ['id' => $user->id]), [
             'token' => $token
-        ]));
+        ]);
 
         $response
             ->assertStatus(200)
@@ -125,7 +125,9 @@ class ReportTest extends TestCase
         $reports = factory(Report::class, 3)->make();
         $sabah->reports()->saveMany($reports);
 
-        $response = $this->json('GET', route('users.my-reports', ['token' => $token]));
+        $response = $this->json('GET', route('users.reports.index', ['id' => $sabah->id]), [
+            'token' => $token
+        ]);
 
         $response->assertStatus(200)
                 ->assertJsonStructure([
@@ -135,7 +137,7 @@ class ReportTest extends TestCase
 
     public function test_guest_should_receive_unauthorized_response_trying_to_access_his_reprots()
     {
-        $this->json('GET', route('users.my-reports'))->assertStatus(401);
+        $this->json('GET', route('users.reports.index', ['id' => 999]))->assertStatus(401);
     }
     
 }

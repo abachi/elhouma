@@ -87,9 +87,8 @@ class UserUpdateReportTest extends TestCase
         $new = UploadedFile::fake()->image('new.jpg');
 
         Storage::disk('public')->assertExists('images/'.$old->hashName());
-        $response = $this->json('POST', route('reports.update.picture'), [
+        $response = $this->json('PUT', route('reports.picture.update', ['id' => $report->id]), [
             'token' => $token,
-            'report_id' => $report->id,
             'picture' => $new,
         ]);
         
@@ -157,9 +156,8 @@ class UserUpdateReportTest extends TestCase
     {
         $user = factory(User::class)->create();;
         $token = JWTAuth::fromUser($user);
-        $response = $this->json('POST', route('reports.update.picture'), [
+        $response = $this->json('PUT', route('reports.picture.update', ['id' => 9999]), [
             'token' => $token,
-            'report_id' => 9999,
             'picture' => UploadedFile::fake()->image('random.jpg'),
         ]);
         $response->assertStatus(Response::HTTP_NOT_FOUND);

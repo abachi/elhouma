@@ -20,8 +20,8 @@ class ReportsController extends Controller
     {
         $this->middleware('auth:api', [
             'only' => [
-                'store', 'confirm', 'myReports',
-                'updateDescription', 'updatePosition', 'updatePicture'
+                'store', 'confirm',
+                'updateDescription', 'updatePosition'
         ]]);
     }
 
@@ -88,31 +88,6 @@ class ReportsController extends Controller
 
         $report->description = (string) $request->description;
         $report->save();
-
-        return response()->json([
-            'report' => $report
-        ], Response::HTTP_ACCEPTED);
-    }
-
-    public function updatePicture(Request $request)
-    {
-        $request->validate([
-            'report_id' => 'required|numeric',
-            'picture' => 'required|image',
-        ]);
-        
-        $report = auth()->user()->findReport($request->report_id);
-
-        if (!$report) {
-            return response()->json(['error' => __('There is no report with this id.')], Response::HTTP_NOT_FOUND);
-        }
-
-        $newPicture = $request->picture->store('images', 'public');
-        $oldPicture = $report->picture;
-        $report->picture = $newPicture;
-        $report->save();
-
-        Storage::disk('public')->delete($oldPicture);
 
         return response()->json([
             'report' => $report
