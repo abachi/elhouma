@@ -17,11 +17,7 @@ class ReportsController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', [
-            'only' => [
-                'store', 'confirm',
-                'updateDescription', 'updatePosition'
-        ]]);
+        $this->middleware('auth:api')->only(['store', 'confirm', 'update']);
     }
 
     public function index()
@@ -49,37 +45,13 @@ class ReportsController extends Controller
         }
     }
 
-    public function updatePosition(Request $request)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'report_id' => 'required|numeric',
-            'lat' => 'required|numeric',
-            'lng' => 'required|numeric',
-        ]);
-        
-        $report = auth()->user()->findReport($request->report_id);
-
-        if (!$report) {
-            return response()->json(['error' => __('There is no report with this id.')], Response::HTTP_NOT_FOUND);
-        }
-
-        $report->lat = $request->lat;
-        $report->lng = $request->lng;
-        $report->save();
-
-        return response()->json([
-            'report' => $report
-        ], Response::HTTP_ACCEPTED);
-    }
-
-    public function updateDescription(Request $request)
-    {
-        $request->validate([
-            'report_id' => 'required|numeric',
             'description' => 'required'
         ]);
         
-        $report = auth()->user()->findReport($request->report_id);
+        $report = auth()->user()->findReport($id);
 
         if (!$report) {
             return response()->json(['error' => __('There is no report with this id.')], Response::HTTP_NOT_FOUND);

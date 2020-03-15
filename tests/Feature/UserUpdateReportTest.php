@@ -15,36 +15,6 @@ class UserUpdateReportTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_authenticated_user_can_update_position_of_his_report()
-    {
-        $user = factory(User::class)->create();
-        $token = JWTAuth::fromUser($user);
-        $report = factory(Report::class)->make([
-            'lat' => '31.6032088',
-            'lng' => '-2.2257426',
-            'description' => 'Example of a short description.',
-            'picture' => UploadedFile::fake()->image('issue.jpg')
-        ]);
-
-        $user->reports()->save($report);
-
-        $response = $this->json('PUT', route('reports.update.position', [
-            'token' => $token,
-            'report_id' => $report->id,
-            'lat' => '32.6032088',
-            'lng' => '-3.2257426',
-        ]));
-
-        $response
-            ->assertStatus(Response::HTTP_ACCEPTED)
-            ->assertJson([
-            'report' => [
-                'lat' => '32.6032088',
-                'lng' => '-3.2257426'
-            ]
-        ]);
-    }
-
     public function test_authenticated_user_can_update_description_of_his_report()
     {
         $user = factory(User::class)->create();
@@ -58,11 +28,10 @@ class UserUpdateReportTest extends TestCase
 
         $user->reports()->save($report);
 
-        $response = $this->json('PUT', route('reports.update.description', [
+        $response = $this->json('PATCH', route('reports.update', ['id' => $report->id]), [
             'token' => $token,
-            'report_id' => $report->id,
             'description' => 'Updated description.'
-        ]));
+        ]);
 
         $response
             ->assertStatus(Response::HTTP_ACCEPTED)
@@ -109,20 +78,8 @@ class UserUpdateReportTest extends TestCase
     public function test_guest_cannot_update_report_description_of_another_user()
     {
         $report = factory(Report::class)->create();
-        $response = $this->json('PUT', route('reports.update.description'), [
-            'report_id' => $report->id,
+        $response = $this->json('PATCH', route('reports.update', ['id' => $report->id]), [
             'description' => 'new description'
-        ]);
-        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
-    }
-
-    public function test_guest_cannot_update_report_position_of_another_user()
-    {
-        $report = factory(Report::class)->create();
-        $response = $this->json('PUT', route('reports.update.position'), [
-            'report_id' => $report->id,
-            'lat' => '31.123',
-            'lng' => '2.123'
         ]);
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
@@ -131,23 +88,9 @@ class UserUpdateReportTest extends TestCase
     {
         $user = factory(User::class)->create();;
         $token = JWTAuth::fromUser($user);
-        $response = $this->json('PUT', route('reports.update.description'), [
+        $response = $this->json('PATCH', route('reports.update', ['id' => 9999]), [
             'token' => $token,
-            'report_id' => 9999,
             'description' => 'Example of description',
-        ]);
-        $response->assertStatus(Response::HTTP_NOT_FOUND);
-    }
-
-    public function test_authenticated_user_cannot_update_position_of_inexistent_report()
-    {
-        $user = factory(User::class)->create();;
-        $token = JWTAuth::fromUser($user);
-        $response = $this->json('PUT', route('reports.update.position'), [
-            'token' => $token,
-            'report_id' => 9999,
-            'lat' => '13.123',
-            'lng' => '2.123',
         ]);
         $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
