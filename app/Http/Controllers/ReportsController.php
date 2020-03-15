@@ -8,7 +8,6 @@ use App\Report;
 use App\IssueConfirmation;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreReport;
-use App\Http\Requests\UpdateReport;
 use App\Http\Requests\IssueFixedRequest;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\IssueConfirmationRequest;
