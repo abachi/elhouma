@@ -140,4 +140,45 @@ class ReportTest extends TestCase
         $this->json('GET', route('users.reports.index', ['id' => 999]))->assertStatus(401);
     }
     
+    public function test_authenticated_user_can_delete_his_own_report()
+    {
+        $user = factory(User::class)->create();
+        $token = JWTAuth::fromUser($user);
+        $report = factory(Report::class)->make();
+        $user->reports()->save($report);
+
+        $response = $this->json('DELETE', route('users.reports.destroy', ['id' => $report->id]), [
+            'token' => $token
+        ]);
+
+        $response->assertStatus(204);
+    }
+    
+    public function test_authenticated_user_cannot_delete_inexsitent_report()
+    {
+        $user = factory(User::class)->create();
+        $token = JWTAuth::fromUser($user);
+
+        $response = $this->json('DELETE', route('users.reports.destroy', ['id' => 9999]), [
+            'token' => $token
+        ]);
+
+        $response
+            ->assertStatus(404)
+            ->assertJson([
+                'error' => __('There is no report with this id.')
+            ]);
+    }
+
+    public function test_guest_cannot_delete_others_reports()
+    {
+        $user = factory(User::class)->create();
+        $token = JWTAuth::fromUser($user);
+        $report = factory(Report::class)->make();
+        $user->reports()->save($report);
+
+        $response = $this->json('DELETE', route('users.reports.destroy', ['id' => $report->id]));
+
+        $response->assertStatus(401);
+    }
 }
