@@ -3,8 +3,8 @@
 namespace App;
 
 use App\User;
-use App\FixedIssue;
-use App\IssueConfirmation;
+use App\ReportFix;
+use App\ReportConfirmation;
 use Illuminate\Database\Eloquent\Model;
 
 class Report extends Model
@@ -13,7 +13,7 @@ class Report extends Model
 
     public function isConfirmedBy(User $user)
     {
-        return IssueConfirmation::where('report_id', $this->id)
+        return ReportConfirmation::where('report_id', $this->id)
             ->where('reporter_id', $user->id)
             ->first() != null;
     }
@@ -21,7 +21,7 @@ class Report extends Model
     public function confirmBy(User $user)
     {
         if(! $this->isConfirmedBy($user)){
-            IssueConfirmation::create([
+            ReportConfirmation::create([
                 'report_id' => $this->id,
                 'reporter_id' => $user->id,
             ]);
@@ -31,15 +31,15 @@ class Report extends Model
 
     public function isFixedBy(User $user)
     {
-        return FixedIssue::where('report_id', $this->id)
+        return ReportFix::where('report_id', $this->id)
             ->where('user_id', $user->id)
             ->first() != null;
     }
 
-    public function fixedBy(User $user)
+    public function fixedRequestBy(User $user)
     {
         if(! $this->isFixedBy($user)){
-            FixedIssue::create([
+            ReportFix::create([
                 'report_id' => $this->id,
                 'user_id' => $user->id,
             ]);

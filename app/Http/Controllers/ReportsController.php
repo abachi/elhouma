@@ -79,17 +79,6 @@ class ReportsController extends Controller
         }
     }
 
-    public function fixed(IssueFixedRequest $request)
-    {
-        $request->validated();
-
-        $report = Report::findOrFail($request->report_id);
-
-        if ($report->fixedBy(auth()->user())) {
-            return response()->json(null, Response::HTTP_CREATED);
-        }
-    }
-
     public function myReports()
     {
         return ReportResource::collection(auth()->user()->reports);

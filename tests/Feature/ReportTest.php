@@ -5,8 +5,8 @@ namespace Tests\Feature;
 use JWTAuth;
 use App\User;
 use App\Report;
-use App\FixedIssue;
-use App\IssueConfirmation;
+use App\ReportFix;
+use App\ReportConfirmation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -40,7 +40,7 @@ class ReportTest extends TestCase
         $report = factory(Report::class)->create(['reporter_id' => $nasser->id]);
         
         $this->assertFalse($report->isConfirmedBy($sabah));
-        $confirmation = IssueConfirmation::create([
+        $confirmation = ReportConfirmation::create([
             'reporter_id' => $sabah->id,
             'report_id' => $report->id,
         ]);
@@ -53,27 +53,11 @@ class ReportTest extends TestCase
         $sabah = factory(User::class)->create();
         $report = factory(Report::class)->create(['reporter_id' => $nasser->id]);
         
-        $this->assertEquals(0, IssueConfirmation::all()->count());
+        $this->assertEquals(0, ReportConfirmation::all()->count());
         
         $this->assertTrue($report->confirmBy($sabah));
         
-        $this->assertEquals(1, IssueConfirmation::all()->count());
-    }
-
-    public function test_authenticated_user_can_request_the_reporter_to_change_report_status_to_fixed()
-    {
-        $this->withoutExceptionHandling();
-        $nasser = factory(User::class)->create();
-        $sabah = factory(User::class)->create();
-        $report = factory(Report::class)->make();
-        $nasser->reports()->save($report);
-        $token = JWTAuth::fromUser($sabah);
-        $response = $this->json('POST', route('reports.fixed', [
-            'token' => $token,
-            'report_id' => $report->id,
-        ]));
-
-        $response->assertStatus(201);
+        $this->assertEquals(1, ReportConfirmation::all()->count());
     }
 
     public function test_authentcated_user_can_sees_his_own_posted_reports()
@@ -109,12 +93,12 @@ class ReportTest extends TestCase
         $userB = factory(User::class)->create();
         $userA->reports()->save($report);
 
-        $this->assertEquals(0, FixedIssue::all()->count());
+        $this->assertEquals(0, ReportFix::all()->count());
         
-        $report->fixedBy($userB);
+        $report->fixedRequestBy($userB);
 
-        $this->assertEquals(1, FixedIssue::all()->count());
-        $this->assertEquals($userB->id, FixedIssue::all()->first()->user_id);
+        $this->assertEquals(1, ReportFix::all()->count());
+        $this->assertEquals($userB->id, ReportFix::all()->first()->user_id);
     }
 
     public function test_authenticated_user_cannot_see_another_user_reports()
