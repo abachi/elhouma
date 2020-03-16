@@ -22,3 +22,5 @@ Route::delete('/reports/{id}/confirm', 'ReportConfirmationController@destroy')->
 
 Route::post('/reports/{id}/fix', 'ReportFixController@store')->name('reports.fix.store');
 Route::delete('/reports/{id}/fix', 'ReportFixController@destroy')->name('reports.fix.destroy');
+
+Route::get('/stats/reports/total', 'StatController@total')->name('stats.reports.total');

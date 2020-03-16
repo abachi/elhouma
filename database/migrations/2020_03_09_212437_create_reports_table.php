@@ -20,6 +20,8 @@ class CreateReportsTable extends Migration
             $table->string('picture');
             $table->float('lat');
             $table->float('lng');
+            $table->boolean('confirmed')->defaul(false);
+            $table->boolean('fixed')->defaul(false);
             $table->timestamps();
         });
     }

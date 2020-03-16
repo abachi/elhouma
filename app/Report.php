@@ -46,4 +46,19 @@ class Report extends Model
         }
         return true;
     }
+
+    public function scopeConfirmed($query)
+    {
+        return $query->where('confirmed', true)->where('fixed', false);
+    }
+
+    public function scopeFixed($query)
+    {
+        return $query->where('fixed', true);
+    }
+
+    public function scopeWaiting($query)
+    {
+        return $query->where('confirmed', false)->where('fixed', false);
+    }
 }
