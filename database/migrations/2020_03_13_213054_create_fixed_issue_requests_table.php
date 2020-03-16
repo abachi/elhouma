@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFixedIssuesTable extends Migration
+class CreateFixedIssueRequestsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateFixedIssuesTable extends Migration
      */
     public function up()
     {
-        Schema::create('fixed_issues', function (Blueprint $table) {
+        Schema::create('fixed_issue_requests', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('report_id');
             $table->integer('user_id');
@@ -28,6 +28,6 @@ class CreateFixedIssuesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fixed_issues');
+        Schema::dropIfExists('fixed_issue_requests');
     }
 }
