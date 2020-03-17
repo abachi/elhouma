@@ -11,6 +11,11 @@ class Report extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'confirmed' => 'boolean',
+        'fixed' => 'boolean',
+    ];
+
     public function isConfirmedBy(User $user)
     {
         return ReportConfirmation::where('report_id', $this->id)

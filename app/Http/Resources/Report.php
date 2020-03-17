@@ -21,6 +21,8 @@ class Report extends JsonResource
             'picture' => asset('storage/'.$this->picture),
             'lat' => $this->lat,
             'lng' => $this->lng,
+            'confirmed' => $this->confirmed,
+            'fixed' => $this->fixed,
         ];
     }
 }

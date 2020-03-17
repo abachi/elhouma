@@ -24,3 +24,7 @@ Route::post('/reports/{id}/fix', 'ReportFixController@store')->name('reports.fix
 Route::delete('/reports/{id}/fix', 'ReportFixController@destroy')->name('reports.fix.destroy');
 
 Route::get('/stats/reports/total', 'StatController@total')->name('stats.reports.total');
+
+Route::get('/filter/reports', 'FilterController@waiting')->name('filter.reports.waiting');
+Route::get('/filter/reports/confirmed', 'FilterController@confirmed')->name('filter.reports.confirmed');
+Route::get('/filter/reports/fixed', 'FilterController@fixed')->name('filter.reports.fixed');
