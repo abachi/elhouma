@@ -36,6 +36,8 @@ class ReportsController extends Controller
             'lat' => $request->lat,
             'lng' => $request->lng,
             'picture' => $picture,
+            'confirmed' => false,
+            'fixed' => false,
         ]);
 
         if ($report) {
@@ -48,7 +50,9 @@ class ReportsController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'description' => 'required'
+            'description' => 'required',
+            'fixed' => 'required',
+            'confirmed' => 'required',
         ]);
         
         $report = auth()->user()->findReport($id);
@@ -58,6 +62,8 @@ class ReportsController extends Controller
         }
 
         $report->description = (string) $request->description;
+        $report->confirmed = $request->confirmed;
+        $report->fixed = $request->fixed;
         $report->save();
 
         return response()->json([

@@ -15,7 +15,7 @@ class UserUpdateReportTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_authenticated_user_can_update_description_of_his_report()
+    public function test_authenticated_user_can_update_his_report()
     {
         $user = factory(User::class)->create();
         $token = JWTAuth::fromUser($user);
@@ -23,14 +23,18 @@ class UserUpdateReportTest extends TestCase
             'lat' => '31.6032088',
             'lng' => '-2.2257426',
             'description' => 'Example of a short description.',
-            'picture' => UploadedFile::fake()->image('issue.jpg')
+            'picture' => UploadedFile::fake()->image('issue.jpg'),
+            'confirmed' => false,
+            'fixed' => false,
         ]);
 
         $user->reports()->save($report);
 
         $response = $this->json('PATCH', route('reports.update', ['id' => $report->id]), [
             'token' => $token,
-            'description' => 'Updated description.'
+            'description' => 'Updated description.',
+            'confirmed' => true,
+            'fixed' => true
         ]);
 
         $response
@@ -38,6 +42,8 @@ class UserUpdateReportTest extends TestCase
             ->assertJson([
             'report' => [
                 'description' => 'Updated description.',
+                'confirmed' => true,
+                'fixed' => true
             ]
         ]);
     }
@@ -75,22 +81,24 @@ class UserUpdateReportTest extends TestCase
         Storage::disk('public')->assertExists('images/'.$new->hashName());
     }
 
-    public function test_guest_cannot_update_report_description_of_another_user()
+    public function test_guest_cannot_update_report_of_another_user()
     {
         $report = factory(Report::class)->create();
         $response = $this->json('PATCH', route('reports.update', ['id' => $report->id]), [
-            'description' => 'new description'
+            'description' => 'new description',
         ]);
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 
-    public function test_authenticated_user_cannot_update_description_of_inexistent_report()
+    public function test_authenticated_user_cannot_update_of_inexistent_report()
     {
         $user = factory(User::class)->create();;
         $token = JWTAuth::fromUser($user);
         $response = $this->json('PATCH', route('reports.update', ['id' => 9999]), [
             'token' => $token,
             'description' => 'Example of description',
+            'confirmed' => false,
+            'fixed' => false,
         ]);
         $response->assertStatus(Response::HTTP_NOT_FOUND);
     }

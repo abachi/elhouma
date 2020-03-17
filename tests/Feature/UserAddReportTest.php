@@ -19,7 +19,9 @@ class UserAddReportTest extends TestCase
             'lat' => '31.6032088',
             'lng' => '-2.2257426',
             'description' => 'Example of a short description.',
-            'picture' => UploadedFile::fake()->image('issue.jpg')
+            'picture' => UploadedFile::fake()->image('issue.jpg'),
+            'confirmed' => false,
+            'fixed' => false,
         ], $data);
     }
 
