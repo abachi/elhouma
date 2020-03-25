@@ -60,7 +60,7 @@ class AuthTest extends TestCase
     {
         $user = factory(User::class)->create();
         $token = \JWTAuth::fromUser($user);
-        $response = $this->json('GET', route('auth.attempt'), ['token' => $token]);
+        $response = $this->json('POST', route('auth.attempt'), ['token' => $token]);
         $response
             ->assertStatus(200)
             ->assertJsonStructure(['user']);
@@ -69,7 +69,7 @@ class AuthTest extends TestCase
     public function test_should_return_invalid_token_response()
     {
         $token = 'foo.baz.boo';
-        $response = $this->json('GET', route('auth.attempt'), ['token' => $token]);
+        $response = $this->json('POST', route('auth.attempt'), ['token' => $token]);
         $response
             ->assertStatus(401)
             ->assertJsonStructure(['error']);
