@@ -66,4 +66,9 @@ class Report extends Model
     {
         return $query->where('confirmed', false)->where('fixed', false);
     }
+
+    public function totalConfirmations()
+    {
+        return ReportConfirmation::where('report_id', $this->id)->get()->count();
+    }
 }

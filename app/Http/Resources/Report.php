@@ -23,6 +23,8 @@ class Report extends JsonResource
             'lng' => $this->lng,
             'confirmed' => $this->confirmed,
             'fixed' => $this->fixed,
+            'totalConfirmations' => $this->totalConfirmations(),
+            'created_at' => $this->created_at->diffForHumans(),
         ];
     }
 }

@@ -18,8 +18,8 @@ class CreateReportsTable extends Migration
             $table->text('description')->nullable();
             $table->integer('reporter_id');
             $table->string('picture');
-            $table->float('lat');
-            $table->float('lng');
+            $table->float('lat', 8, 6);
+            $table->float('lng', 8, 6);
             $table->boolean('confirmed')->defaul(false);
             $table->boolean('fixed')->defaul(false);
             $table->timestamps();
