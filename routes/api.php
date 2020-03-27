@@ -14,7 +14,7 @@ Route::patch('/reports/{id}', 'ReportsController@update')->name('reports.update'
 
 Route::put('/reports/{id}/picture', 'ReportsPicturesController@update')->name('reports.picture.update');
 
-Route::get('/users/{id}/reports', 'UsersReportsController@index')->name('users.reports.index');
+Route::get('/users/reports', 'UsersReportsController@index')->name('users.reports.index');
 Route::delete('/users/{id}/reports', 'UsersReportsController@destroy')->name('users.reports.destroy');
 
 Route::post('/reports/{id}/confirm', 'ReportConfirmationController@store')->name('reports.confirmations.store');

@@ -14,7 +14,7 @@ class UsersReportsController extends Controller
 
     public function index()
     {
-        return ReportResource::collection(auth()->user()->reports);
+        return ReportResource::collection(auth()->user()->reports()->orderBy('created_at', 'desc')->get());
     }
 
     public function destroy($id)

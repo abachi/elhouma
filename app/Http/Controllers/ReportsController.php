@@ -22,7 +22,7 @@ class ReportsController extends Controller
 
     public function index()
     {
-        return ReportResource::collection(Report::all());
+        return ReportResource::collection(Report::orderBy('created_at', 'desc')->get());
     }
 
     public function store(StoreReport $request)

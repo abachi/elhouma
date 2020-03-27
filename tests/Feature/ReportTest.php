@@ -67,7 +67,7 @@ class ReportTest extends TestCase
         $token = JWTAuth::fromUser($user);
         $user->reports()->saveMany($reports);
         
-        $response = $this->json('GET', route('users.reports.index', ['id' => $user->id]), [
+        $response = $this->json('GET', route('users.reports.index'), [
             'token' => $token
         ]);
 
@@ -109,7 +109,7 @@ class ReportTest extends TestCase
         $reports = factory(Report::class, 3)->make();
         $sabah->reports()->saveMany($reports);
 
-        $response = $this->json('GET', route('users.reports.index', ['id' => $sabah->id]), [
+        $response = $this->json('GET', route('users.reports.index'), [
             'token' => $token
         ]);
 
