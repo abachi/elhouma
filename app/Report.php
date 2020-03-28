@@ -14,6 +14,7 @@ class Report extends Model
     protected $casts = [
         'confirmed' => 'boolean',
         'fixed' => 'boolean',
+        'reporter_id' => 'integer',
     ];
 
     public function isConfirmedBy(User $user)
@@ -48,6 +49,11 @@ class Report extends Model
                 'report_id' => $this->id,
                 'user_id' => $user->id,
             ]);
+            
+            if($user->id === $this->reporter_id){
+                $this->fixed = true;
+                $this->save();
+            }
         }
         return true;
     }

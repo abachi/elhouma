@@ -166,4 +166,22 @@ class ChangeReportStatusToConfirmedAndFixedTest extends TestCase
         $response = $this->json('DELETE', route('reports.fix.destroy', ['id' => $report->id]));
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
+
+    public function test_reporter_can_change_his_own_report_status_to_fixed()
+    {
+        $owner = factory(User::class)->create();
+        $report = factory(Report::class)->make();
+        $owner->reports()->save($report);
+        $token = JWTAuth::fromUser($owner);
+        $owner->reports()->save($report);
+
+        $this->assertFalse($report->fixed);
+        $this->assertEquals(0, ReportFix::all()->count());
+        $response = $this->json('POST', route('reports.fix.store', ['id' => $report]), [
+            'token' => $token
+        ]);
+        $response->assertStatus(Response::HTTP_CREATED);
+        $this->assertEquals(1, ReportFix::all()->count());
+        $this->assertTrue(Report::find($report->id)->fixed);
+    }
 }
