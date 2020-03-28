@@ -1,7 +1,7 @@
 <?php
 
 $DATABASE_URL['host'] = 'ec2-184-72-236-3.compute-1.amazonaws.com';
-$DATABASE_URL['path'] = 'postgres://rgeohanagzgxud:a009b53ef01d0b962e2cbcda42bd86bb0c339251ca7d51f923c676694a1179e5@ec2-184-72-236-3.compute-1.amazonaws.com:5432/d2sommjfvf29hp';
+$DATABASE_URL['database'] = 'd2sommjfvf29hp';
 $DATABASE_URL['port'] = '5432';
 $DATABASE_URL['user'] = 'rgeohanagzgxud';
 $DATABASE_URL['pass'] = 'a009b53ef01d0b962e2cbcda42bd86bb0c339251ca7d51f923c676694a1179e5';
@@ -73,7 +73,7 @@ return [
             'driver' => 'pgsql',
             'host' => $DATABASE_URL["host"],
             'port' => $DATABASE_URL["port"],
-            'database' => ltrim($DATABASE_URL["path"], "/"),
+            'database' => $DATABASE_URL["database"],
             'username' => $DATABASE_URL["user"],
             'password' => $DATABASE_URL["pass"],
             'charset' => 'utf8',
