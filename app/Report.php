@@ -15,6 +15,8 @@ class Report extends Model
         'confirmed' => 'boolean',
         'fixed' => 'boolean',
         'reporter_id' => 'integer',
+        'lat' => 'float',
+        'lng' => 'float',
     ];
 
     public function isConfirmedBy(User $user)
