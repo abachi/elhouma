@@ -18,7 +18,7 @@ class Report extends JsonResource
             'id' => $this->id,
             'reporter_id' => $this->reporter_id,
             'description' => $this->description,
-            'picture' => asset('storage/'.$this->picture),
+            'picture' => $this->picture,
             'lat' => $this->lat,
             'lng' => $this->lng,
             'confirmed' => $this->confirmed,

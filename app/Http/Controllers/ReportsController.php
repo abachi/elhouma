@@ -28,8 +28,8 @@ class ReportsController extends Controller
     public function store(StoreReport $request)
     {
         $request->validated();
-        $picture = $request->picture->store('images', 'public');
-        
+        $path = Storage::disk('s3')->put('images', $request->picture);
+        $picture = Storage::disk('s3')->url($path);
         $report = Report::create([
             'reporter_id' => auth()->user()->id,
             'description' => $request->description,

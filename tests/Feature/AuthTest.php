@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\User;
+use \Facebook\Facebook;
+use Tests\Feature\FakeFacebook;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -153,5 +155,34 @@ class AuthTest extends TestCase
             'password_confirmation' => '',
         ]));
         $response->assertStatus(422);
+    }
+
+    public function test_user_should_login_with_facebook_account()
+    {
+        $this->withoutExceptionHandling();
+        $data = [
+            'name' => 'Nasser Abachi',
+            'email' => 'abachinasser@gmail.com',
+            'provider' => 'facebook',
+            'provider_token' => 'randome_facebook_access_token',
+            'provider_user_id' => '1000010000123456',
+        ];
+    
+        $fb = new FakeFacebook;
+        $this->swap(ISocialLogin::class, FakeFacebook::class);
+
+        $response = $this->json('POST', route('sociallogin'), $data);
+        $response->assertStatus(201)
+                    ->assertJsonStructure([
+                        'status',
+                        'data' => [
+                        'email',
+                        'provider',
+                        'name',
+                        'provider_user_id',
+                        'token',
+                        ]
+                    ]);
+
     }
 }

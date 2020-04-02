@@ -5,6 +5,7 @@ Route::group(['prefix' => 'auth', 'namespace' => 'Auth'], function () {
     Route::post('login', 'AuthController@login')->name('auth.login');
     Route::post('logout', 'AuthController@logout')->name('auth.logout');
     Route::post('attempt', 'AuthController@attempt')->name('auth.attempt');
+    Route::post('social-login', 'AuthController@socialLogin')->name('sociallogin');
 });
 
 
