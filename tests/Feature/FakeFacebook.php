@@ -2,12 +2,23 @@
 
 namespace Tests\Feature;
 
-use App\ISocialLogin;
+use App\FacebookInterface;
+use Facebook\Exceptions\FacebookResponseException;
 
-class FakeFacebook implements ISocialLogin {
+class FakeFacebook implements FacebookInterface {
 
-    public function get($path)
+    public function get($accessToken)
     {
-        return true;
+        
+        try {
+            if($accessToken === 'valid_facebook_access_token'){
+                $response = true;
+            }else{
+                throw new \Exception;
+            }
+        } catch (\Exception $e) {
+            return null;
+        }
+        return $response;
     }
 }

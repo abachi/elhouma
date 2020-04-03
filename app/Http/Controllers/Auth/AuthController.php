@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
-use App\SocialUser;
+use App\FacebookInterface;
 use Illuminate\Http\Request;
 use App\Http\Requests\SocialLoginRequest;
 use App\Http\Requests\RegisterUser;
@@ -14,9 +14,10 @@ use Tymon\JWTAuth\Exceptions\TokenInvalidException;
 
 class AuthController extends Controller
 {
-    public function __construct()
+    public function __construct(FacebookInterface $facebook)
     {
         $this->middleware('auth:api', ['only' => ['logout']]);
+        $this->facebook = $facebook;
     }
 
     public function login(Request $request)
@@ -65,27 +66,21 @@ class AuthController extends Controller
     public function socialLogin(SocialLoginRequest $request)
     {
         $data = $request->validated();
-        $fb = new \Facebook\Facebook([
-            'app_id' => '545083476140376',
-            'app_secret' => 'e16e71b0237d0b03838c14d70660a45d',
-            'default_graph_version' => 'v2.10',
-            'default_access_token' => $data['provider_token'], // optional
-          ]);
-        try {
-            $response = $fb->get('/me');
-        } catch (\Facebook\Exceptions\FacebookResponseException $e) {
+        $success = $this->facebook->get($data['provider_token']);
+        if(!$success){
             return response()->json([
-                'status' => $e->getHttpStatusCode(),
-                'error' => $e->getMessage(),
-            ], $e->getHttpStatusCode());
+                'status' => 400,
+                'error' => 'Login failed',
+            ], 400);
         }
+
         $user = User::where(['email'=> $data['email']])->get()->first();
-        
         if(!$user){
             $user = User::create($data);
         }
 
         $data['token'] = \JWTAuth::fromUser($user);
+        $data['id'] = $user->id;
         return response()->json([
             'status' => 201,
             'data' => $data

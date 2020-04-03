@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use JWTAuth;
 use App\User;
 use App\Report;
 use Tests\TestCase;
@@ -13,108 +14,68 @@ class UserAddReportTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function reportData($data = [])
+    private $validData;
+
+    public function setUp() : void
     {
-        return array_merge([
+        parent::setUp();
+        Storage::fake('s3');
+        $user = factory(User::class)->create();
+        $token = JWTAuth::fromUser($user);
+        $this->validData = [
+            'token' => $token,
             'lat' => '31.6032088',
             'lng' => '-2.2257426',
             'description' => 'Example of a short description.',
             'picture' => UploadedFile::fake()->image('issue.jpg'),
             'confirmed' => false,
             'fixed' => false,
-        ], $data);
-    }
-
-    private function reportDataWithToken($data = [])
-    {
-        $data = $this->reportData($data);
-        $data['token'] = \JWTAuth::fromUser(factory(User::class)->create());
-        return $data;
+        ];
     }
 
     public function test_authenticated_user_can_add_a_valid_report()
     {
-        Storage::disk('public')->assertMissing('issue.jpg');
         $this->assertNull(Report::all()->first());
-        $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken());
+        
+        $response = $this->postJson(route('reports.store'), $this->validData);
+
         $report = Report::all()->first();
         $this->assertNotNull($report);
-        Storage::disk('public')->assertExists($report->picture);
-        $response
-            ->assertStatus(201)
-            ->assertJsonStructure(['report']);
-    }
-
-    public function test_cannot_add_a_report_with_invalid_token()
-    {
-        $response = $this->json('POST', route('reports.store'), $this->reportData());
-        $this->assertEquals(0, Report::all()->count());
-        $response->assertStatus(401);
-    }
-
-    public function test_should_not_add_report_with_missing_latitude()
-    {
-        $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
-            'lat' => '',
-        ]));
-        $this->assertEquals(0, Report::all()->count());
-        $response->assertStatus(422);
-    }
-
-    public function test_should_not_add_report_with_invalid_latitude()
-    {
-        $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
-            'lat' => 'invalid_lat',
-        ]));
-        $this->assertEquals(0, Report::all()->count());
-        $response->assertStatus(422);
-    }
-
-    public function test_should_not_add_report_with_missing_longitude()
-    {
-        $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
-            'lng' => '',
-        ]));
-        $this->assertEquals(0, Report::all()->count());
-        $response->assertStatus(422);
-    }
-
-    public function test_should_not_add_report_with_invalid_longitude()
-    {
-        $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
-            'lng' => 'invalid_lng',
-        ]));
-        $this->assertEquals(0, Report::all()->count());
-        $response->assertStatus(422);
-    }
-
-    public function test_should_not_add_report_with_missing_picture()
-    {
-        $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
-            'picture' => '',
-        ]));
-        $this->assertEquals(0, Report::all()->count());
-        $response->assertStatus(422);
-    }
-
-    public function test_should_not_add_report_with_invalid_picture()
-    {
-        $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
-            'picture' => UploadedFile::fake()->image('issue.php')
-        ]));
-        $this->assertEquals(0, Report::all()->count());
-        $response->assertStatus(422);
+        Storage::disk('s3')->assertExists($report->pciture);
+        $response->assertStatus(201);
+        $response->assertJsonStructure(['report']);
     }
 
     public function test_should_add_report_with_optional_description()
     {
         $this->assertNull(Report::all()->first());
-        $response = $this->json('POST', route('reports.store'), $this->reportDataWithToken([
-            'description' => ''
-        ]));
+        $data = array_merge($this->validData, ['description' => null]);
+        $response = $this->json('POST', route('reports.store'), $data);
         $this->assertNotNull(Report::all()->first());
-        $response
-            ->assertStatus(201)
-            ->assertJsonStructure(['report']);
+        $response->assertStatus(201);
+        $response->assertJsonStructure(['report']);
+    }
+
+    /**
+     * @dataProvider reportDataProvider
+     */
+    public function testReportInputValidation($invalidData, $key)
+    {
+        $data = array_merge($this->validData, $invalidData);
+        $response = $this->postJson(route('reports.store', $data));
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors([$key]);
+    }
+
+    public function reportDataProvider()
+    {
+        return [
+            [['lat' => null], 'lat'],
+            [['lat' => 'not-numeric'], 'lat'],
+            [['lng' => null], 'lng'],
+            [['lng' => 'not-numeric'], 'lng'],
+            [['picture' => null], 'picture'],
+            [['picture' => UploadedFile::fake()->create('not-image.pdf')], 'picture'],
+        ];
     }
 }
